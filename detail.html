@@ -1,0 +1,51 @@
+{% if messages %}
+  <ul class="messages" style="color: green;">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<form action="{% url 'polls:vote' question.id %}" method="post">
+    {% csrf_token %}
+    <fieldset>
+        <legend><h1>{{ question.question_text }}</h1></legend>
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+        {% for choice in question.choice_set.all %}
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+        {% endfor %}
+    </fieldset>
+    <input type="submit" value="Vote">
+</form>
+
+<hr>
+
+<h2>Edit or Delete Choices</h2>
+<ul>
+    {% for choice in choices %}
+    <li>
+        <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="choice_id" value="{{ choice.id }}">
+            <input type="text" name="choice_text" value="{{ choice.choice_text }}">
+            <button type="submit" name="edit_choice">Save</button>
+        </form>
+
+        <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="choice_id" value="{{ choice.id }}">
+            <button type="submit" name="delete_choice">Delete</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+<h2>Add a New Choice</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.choice_text }}
+    <button type="submit" name="add_choice">Add</button>
+</form>

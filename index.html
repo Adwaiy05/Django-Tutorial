@@ -1,0 +1,72 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'polls/style.css' %}">
+
+<h1>Latest Polls</h1>
+
+{% if messages %}
+  <ul class="messages" style="color: green;">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<form method="get">
+    <input 
+        type="text" 
+        name="q" 
+        placeholder="Search questions..." 
+        value="{{ query }}"
+    >
+
+    <label for="filter_date">Filter by date:</label>
+    <select name="filter_date" id="filter_date">
+        <option value="">Any date</option>
+        <option value="today" {% if filter_date == "today" %}selected{% endif %}>Today</option>
+        <option value="week" {% if filter_date == "week" %}selected{% endif %}>Past 7 days</option>
+        <option value="month" {% if filter_date == "month" %}selected{% endif %}>This month</option>
+        <option value="year" {% if filter_date == "year" %}selected{% endif %}>This year</option>
+    </select>
+
+    <button type="submit">Apply</button>
+</form>
+
+<p><a href="{% url 'polls:create_poll' %}">+ Create New Poll</a></p>
+
+{% if latest_question_list %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Question</th>
+                <th>Published</th>
+                <th>Recently?</th>
+                <th>Manage</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for question in latest_question_list %}
+                <tr>
+                    <td>{{ question.question_text }}</td>
+                    <td>{{ question.pub_date }}</td>
+                    <td>{{ question.was_published_recently }}</td>
+                    <td>
+                        <a href="{% url 'polls:detail' question.id %}" title="Vote or edit choices">
+                            Manage
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'polls:edit_poll' question.id %}">Edit</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'polls:delete_poll' question.id %}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No polls available.</p>
+{% endif %}
