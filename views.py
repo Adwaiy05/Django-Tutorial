@@ -50,7 +50,6 @@ def detail(request, question_id):
     form = ChoiceForm()
 
     if request.method == "POST":
-        # Add new choice
         if "add_choice" in request.POST:
             form = ChoiceForm(request.POST)
             if form.is_valid():
@@ -60,7 +59,6 @@ def detail(request, question_id):
                 messages.success(request, "Choice has been added successfully!")
                 return redirect("polls:detail", question_id=question.id)
 
-        # Edit existing choice
         elif "edit_choice" in request.POST:
             choice_id = request.POST.get("choice_id")
             choice = get_object_or_404(Choice, pk=choice_id)
@@ -70,7 +68,6 @@ def detail(request, question_id):
                 messages.success(request, "Choice has been updated successfully!")
                 return redirect("polls:detail", question_id=question.id)
 
-        # Delete choice
         elif "delete_choice" in request.POST:
             choice_id = request.POST.get("choice_id")
             choice = get_object_or_404(Choice, pk=choice_id)
@@ -95,7 +92,6 @@ def vote(request, question_id):
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
     except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
         return render(
             request,
             "polls/detail.html",
